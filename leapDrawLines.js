@@ -28,31 +28,33 @@ function HandleHand(hand,pointables){
 function HandleFinger(fingers,pointables){
 	//console.log(fingers);
 	for (j = 0; j < 5; j++) {
-		console.log(fingers[j]);
-		var tip = pointables[1].tipPosition;
-		x = tip[0];
-		y = tip[1];
-		z = tip[2];
-		if (x < rawXMin){
-			rawXMin = x;
-		}
-		if (x > rawXMax){
-			rawXMax = x;
-		}
-		if (y < rawYMin){
-			rawYMin = y;
-		}
-		if (y > rawYMax){
-			rawYMax = y;
-		}
+		
+			console.log(fingers[j]);
+			var tip = pointables[1].tipPosition;
+			x = tip[0];
+			y = tip[1];
+			z = tip[2];
+			if (x < rawXMin){
+				rawXMin = x;
+			}
+			if (x > rawXMax){
+				rawXMax = x;
+			}
+			if (y < rawYMin){
+				rawYMin = y;
+			}
+			if (y > rawYMax){
+				rawYMax = y;
+			}
 			
 
-		scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-		scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-		circle(x + window.innerWidth/2,-y + window.innerHeight,r);
-		console.log(scalex);
-		console.log(scaley);
+			scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
+			scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
+			circle(x + window.innerWidth/2,-y + window.innerHeight,r);
+			console.log(scalex);
+			console.log(scaley);
 
+		
 	}
 }
 
