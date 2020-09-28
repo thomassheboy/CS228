@@ -1,145 +1,81 @@
-var controllerOptions = {};
-var i = 0;
-var x = window.innerWidth/2;
-var y = window.innerHeight/2;
-var r = 25;
-var z;
-var rawXMax = 200;
-var rawXMin = -100;
-var rawYMax = 100;
-var rawYMin = -100;
-
-function HandleFrame(frame){
-	if(frame.hands.length == 1){
-		var hand = frame.hands[0];
-		var pointables = frame.pointables;
-		HandleHand(hand,pointables);
-	}
-}
-
-
-function HandleHand(hand,pointables){
-	//console.log(hand);
-	var fingers = hand.fingers;
-	for (i = 3 ; i >= 0 ; i--){
-		for (j = 0 ; j < 5 ; j++){
-		HandleBone(fingers[j].bones[i],i);
-		}	
-	}	
-	//HandleFinger(fingers,pointables);
-
-}
-
-function HandleFinger(fingers,pointables){
-	//console.log(fingers);
-	for (j = 0; j < 5; j++) {
-		
-			//console.log(fingers[j]);
-			var tip = pointables[j].tipPosition;
-			x = tip[0];
-			y = tip[1];
-			z = tip[2];
-			if (x < rawXMin){
-				rawXMin = x;
-			}
-			if (x > rawXMax){
-				rawXMax = x;
-			}
-			if (y < rawYMin){
-				rawYMin = y;
-			}
-			if (y > rawYMax){
-				rawYMax = y;
-			}
-			
-
-			scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-			scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-			//circle(x + window.innerWidth/2,-y + window.innerHeight,r);
-			//console.log(scalex);
-			//console.log(scaley);
-			var bones = fingers[j].bones;
-			HandleBone(bones);
-	}
-}
-
-function HandleBone(bones,i){
-	//for (i = 0; i < 4 ; i++){
-		//console.log(bones[i]);
-		var x = bones.nextJoint[0];
-		var y = bones.nextJoint[1];
-		var z = bones.nextJoint[2];
-		var a = bones.prevJoint[0];
-		var b = bones.prevJoint[1];
-		var c = bones.prevJoint[2];
-		
-		if (x < rawXMin){
-				rawXMin = x;
-			}
-			if (x > rawXMax){
-				rawXMax = x;
-			}
-			if (y < rawYMin){
-				rawYMin = y;
-			}
-			if (y > rawYMax){
-				rawYMax = y;
-			}
-			
-
-			scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-			scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-			//circle(x + window.innerWidth/2,-y + window.innerHeight,r);
-			[a,b,x,y] = transformCoordinates(a,b,x,y);
-			if (i == 0){
-				stroke(100);
-				strokeWeight(4);
-			}else if (i == 1){
-				stroke(75);
-				strokeWeight(3);
-			}else if (i == 2){
-				stroke(50);
-				strokeWeight(2);
-			}else if (i == 3){
-				stroke(25);
-				strokeWeight(1);
-			}
-			line(a,b,x,y);
-	//}	
-}
-
-function transformCoordinates(a,b,x,y){
-	if (x < rawXMin){
-		rawXMin = x;
-	}
-	if (x > rawXMax){
-		rawXMax = x;
-	}
-	if (y < rawYMin){
-		rawYMin = y;
-	}
-	if (y > rawYMax){
-		rawYMax = y;
-	}
-			
-	scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-	scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-	x = x + window.innerWidth/2;
-	a = a + window.innerWidth/2;
-	y = -y + window.innerHeight/2;
-	b = -b + window.innerHeight/2;
-	return [a,b,x,y];
-}	
-
-Leap.loop(controllerOptions, function(frame)
-{	
+oneFrameOfData = nj.array([[[ 368.3311,  151.614,  65.8495, 368.3311,  151.614,  65.8495],
+        [ 368.3311,  151.614,  65.8495, 358.3805,  139.249, 42.18595],
+        [ 358.3805,  139.249, 42.18595, 368.8192,  145.706, 26.28115],
+        [ 368.8192,  145.706, 26.28115, 373.9936,  148.355, 14.94605]],
+       [[384.31352,  134.177,  65.0735,387.40979,  117.258, 29.30795],
+        [387.40979,  117.258, 29.30795,392.29692,  107.047,  8.58585],
+        [392.29692,  107.047,  8.58585,392.78834,  107.878, -3.48971],
+        [392.78834,  107.878, -3.48971, 391.8173,  112.207,-11.73955]],
+       [[396.42937,  136.295,   64.782, 408.3687,  123.488, 31.01455],
+        [ 408.3687,  123.488, 31.01455, 423.4137,  113.292,   8.6932],
+        [ 423.4137,  113.292,   8.6932, 428.5845,  113.907, -5.28455],
+        [ 428.5845,  113.907, -5.28455, 429.7771,  117.926,-14.44375]],
+       [[ 407.5925,  141.422,   64.859, 426.9028,  133.558,  35.3249],
+        [ 426.9028,  133.558,  35.3249, 444.0371,  123.826,  15.2751],
+        [ 444.0371,  123.826,  15.2751, 450.7585,  123.788,  1.83802],
+        [ 450.7585,  123.788,  1.83802, 452.8409,  127.145,  -7.2928]],
+       [[ 415.6936,  153.095,  65.2715, 441.3765,      147,  39.4569],
+        [ 441.3765,      147,  39.4569, 459.0772,  143.171,  24.2722],
+        [ 459.0772,  143.171,  24.2722, 465.2719,  144.895,  15.0364],
+        [ 465.2719,  144.895,  15.0364, 467.8207,  149.089,  6.77475]]])
+anotherFrameOfData = nj.array([[[ 369.3415,  126.147,  55.7465, 369.3415,  126.147,  55.7465],
+        [ 369.3415,  126.147,  55.7465, 365.7809,  119.291,  31.0885],
+        [ 365.7809,  119.291,  31.0885, 368.4397,  118.312, 14.09965],
+        [ 368.4397,  118.312, 14.09965, 371.0326,  118.208,  2.47001]],
+       [[385.68235,  109.302,  57.4135,393.51851,   76.881, 24.62655],
+        [393.51851,   76.881, 24.62655,397.35749,   63.872,  4.24404],
+        [397.35749,   63.872,  4.24404,398.88922,   58.252,   -7.485],
+        [398.88922,   58.252,   -7.485,399.62854,   55.213,-15.88345]],
+       [[397.77336,  111.604,  57.2365, 414.1154,   84.354, 26.18035],
+        [ 414.1154,   84.354, 26.18035, 428.7316,   73.356,  3.88301],
+        [ 428.7316,   73.356,  3.88301, 436.1236,   68.777,  -9.6542],
+        [ 436.1236,   68.777,  -9.6542,  440.355,   66.743,-18.75225]],
+       [[ 408.8168,  116.974,  57.0505, 431.9028,   96.661,  29.7641],
+        [ 431.9028,   96.661,  29.7641, 452.4538,   84.243, 10.92465],
+        [ 452.4538,   84.243, 10.92465, 462.2316,   80.456, -1.89577],
+        [ 462.2316,   80.456, -1.89577, 467.0244,   80.109, -10.9235]],
+       [[ 416.6521,  128.776,  56.3655, 445.6036,  112.049, 32.67845],
+        [ 445.6036,  112.049, 32.67845, 466.2061,  107.236, 18.51295],
+        [ 466.2061,  107.236, 18.51295, 474.8839,   106.94,  9.75005],
+        [ 474.8839,   106.94,  9.75005, 480.3929,  108.346,  1.61398]]])
+var xStart;
+var yStart;
+var zStart;
+var xEnd;
+var yEnd;
+var zEnd;
+var frameIndex = 0;
+var other = 0;
+function draw(){
 	clear();
-	//console.log(i)
-	//i++;
-	//var ranx = Math.floor(Math.random() * 2) + -2;
-	//var rany = Math.floor(Math.random() * 2) + -2;
-	//circle(x + ranx,y + rany,r);
-	
-	HandleFrame(frame);
+	for (var i = 0 ; i < oneFrameOfData.shape[0] ; i++){
+		for(var j = 0 ; j < oneFrameOfData.shape[1] ; j++){
+			if(other % 2){
+				xStart = oneFrameOfData.get(i,j,0);
+				yStart = oneFrameOfData.get(i,j,1);
+				zStart = oneFrameOfData.get(i,j,2);
+				xEnd = oneFrameOfData.get(i,j,3);
+				yEnd = oneFrameOfData.get(i,j,4);
+				zEnd = oneFrameOfData.get(i,j,5);
+				line(xStart,yStart,xEnd,yEnd);
+			}else{
+				xStart = anotherFrameOfData.get(i,j,0);
+				yStart = anotherFrameOfData.get(i,j,1);
+				zStart = anotherFrameOfData.get(i,j,2);
+				xEnd = anotherFrameOfData.get(i,j,3);
+				yEnd = anotherFrameOfData.get(i,j,4);
+				zEnd = anotherFrameOfData.get(i,j,5);
+				line(xStart,yStart,xEnd,yEnd);
+			}
+		}	
+	}
+	frameIndex+= 1;
+	if (frameIndex == 100){
+		frameIndex = 0;
+		if(other == 0){
+			other = 1;
+		}else{
+			other = 0;
+		}
+	}	
 }
-);
