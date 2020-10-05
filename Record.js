@@ -1,4 +1,7 @@
-var oneFrameOfData = nj.zeros([5,4,6]);
+nj.config.printThreshold = 1000;
+var numSamples = 2;
+var framesOfData = nj.zeros([5,4,6,numSamples]);
+var currentSample = 0;
 var controllerOptions = {};
 var i = 0;
 var x = window.innerWidth/2;
@@ -16,17 +19,19 @@ function HandleFrame(frame){
 	if(frame.hands.length >= 1){
 		var hand = frame.hands[0];
 		var pointables = frame.pointables;
-		HandleHand(hand,pointables);
+		var box = frame.interactionBox;
+		
+		HandleHand(hand,pointables, box);
 	}
 }
 
 
-function HandleHand(hand,pointables){
+function HandleHand(hand,pointables, InteractionBox){
 	//console.log(hand);
 	var fingers = hand.fingers;
 	for (i = 3 ; i >= 0 ; i--){
 		for (j = 0 ; j < 5 ; j++){
-		HandleBone(fingers[j].bones[i],i,j);
+		HandleBone(fingers[j].bones[i],i,j, InteractionBox);
 		}	
 	}	
 	//HandleFinger(fingers,pointables);
@@ -66,105 +71,94 @@ function HandleFinger(fingers,pointables){
 	}
 }
 
-function HandleBone(bones,i,j){
+function HandleBone(bones,i,j, InteractionBox){
 	//for (i = 0; i < 4 ; i++){
 		//console.log(bones[i]);
-		var x = bones.nextJoint[0];
-		var y = bones.nextJoint[1];
-		var z = bones.nextJoint[2];
-		var a = bones.prevJoint[0];
-		var b = bones.prevJoint[1]; 
-		var c = bones.prevJoint[2];
+		var normalizedNextJoint = InteractionBox.normalizePoint(bones.nextJoint, true);
+		var normalizedPrevJoint = InteractionBox.normalizePoint(bones.prevJoint, true);
+		//console.log(normalizedNextJoint[1]);
+		//console.log(normalizedPrevJoint[1]);
+		var x = normalizedNextJoint[0];
+		var y = normalizedNextJoint[1];
+		var z = normalizedNextJoint[2];
+		var a = normalizedPrevJoint[0];
+		var b = normalizedPrevJoint[1]; 
+		var c = normalizedPrevJoint[2];
 		
-		if (x < rawXMin){
-				rawXMin = x;
-			}
-			if (x > rawXMax){
-				rawXMax = x;
-			}
-			if (y < rawYMin){
-				rawYMin = y;
-			}
-			if (y > rawYMax){
-				rawYMax = y;
-			}
-			
-
-			scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-			scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-			//circle(x + window.innerWidth/2,-y + window.innerHeight,r);
-			[a,b,x,y] = transformCoordinates(a,b,x,y);
+		framesOfData.set(j,i,0,currentSample,a);
+		framesOfData.set(j,i,1,currentSample,b);
+		framesOfData.set(j,i,2,currentSample,c);
+		framesOfData.set(j,i,3,currentSample,x);
+		framesOfData.set(j,i,4,currentSample,y);
+		framesOfData.set(j,i,5,currentSample,z);
+		
+		var canvasX = window.innerWidth * normalizedNextJoint[0];
+		var canvasY = window.innerHeight * (1-normalizedNextJoint[1]);
+		var canvasA = window.innerWidth * normalizedPrevJoint[0];
+		var canvasB = window.innerHeight * (1-normalizedPrevJoint[1]);
+		//console.log(canvasX)
+		//console.log(canvasY)
+		//console.log(canvasA)
+		//console.log(canvasB)
+		
+		
 			c = c/2;
 			z = z/2;
 			var sum = x + y + z + a + b + c;
-			oneFrameOfData.set(j,i,0,a);
-			oneFrameOfData.set(j,i,1,b);
-			oneFrameOfData.set(j,i,2,c);
-			oneFrameOfData.set(j,i,3,x);
-			oneFrameOfData.set(j,i,4,y);
-			oneFrameOfData.set(j,i,5,z);
+			//oneFrameOfData.set(j,i,0,a);
+			//oneFrameOfData.set(j,i,1,b);
+			//oneFrameOfData.set(j,i,2,c);
+			//oneFrameOfData.set(j,i,3,x);
+			//oneFrameOfData.set(j,i,4,y);
+			//oneFrameOfData.set(j,i,5,z);
+			//console.log(oneFrameOfData.toString())
 			
 			if(currentNumHands == 1){
 				if (i == 0){ //Green
 					stroke(0,100,0);
-					strokeWeight(4);
+					strokeWeight(20);
 				}else if (i == 1){
 					stroke(0,128,0);
-					strokeWeight(3);
+					strokeWeight(15);
 				}else if (i == 2){
 					stroke(34,139,34);
-					strokeWeight(2);
+					strokeWeight(10);
 				}else if (i == 3){
 					stroke(0,255,0);
-					strokeWeight(1);
+					strokeWeight(5);
 				}
 			}else {
 				if (i == 0){ //Red
 					stroke(153,0,0);
-					strokeWeight(4);
+					strokeWeight(20);
 				}else if (i == 1){
 					stroke(255,0,0);
-					strokeWeight(3);
+					strokeWeight(15);
 				}else if (i == 2){
 					stroke(255,102,102);
-					strokeWeight(2);
+					strokeWeight(10);
 				}else if (i == 3){
 					stroke(255,153,153);
-					strokeWeight(1);
+					strokeWeight(5);
 				}
 			}
-			line(a,b,x,y);
+			line(canvasA,canvasB,canvasX,canvasY);
 	//}	
 }
 
-function transformCoordinates(a,b,x,y){
-	if (x < rawXMin){
-		rawXMin = x;
-	}
-	if (x > rawXMax){
-		rawXMax = x;
-	}
-	if (y < rawYMin){
-		rawYMin = y;
-	}
-	if (y > rawYMax){
-		rawYMax = y;
-	}
-			
-	scalex = (((x + window.innerWidth) - rawXMin) / (rawXMax - rawXMin) ) * (window.innerWidth);
-	scaley = (((-y + window.innerHeight) - rawYMin) / (rawYMax - rawXMin) ) * (window.innerHeight);
-	x = x + window.innerWidth/2;
-	a = a + window.innerWidth/2;
-	y = -y + window.innerHeight/2;
-	b = -b + window.innerHeight/2;
-	return [a,b,x,y];
-}	
 
 function changeBackground(){
 		if (previousNumHands == 2 && currentNumHands == 1){
 			background('#222222');
-			console.log(oneFrameOfData.toString())
+			console.log( framesOfData.toString() );
 
+		}
+		if(currentNumHands == 2){
+			currentSample++;
+			if (currentSample == numSamples){
+				currentSample = 0;
+			}
+			//console.log(currentSample)
 		}	
 }	
 
