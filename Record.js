@@ -1,5 +1,5 @@
-nj.config.printThreshold = 1000;
-var numSamples = 2;
+nj.config.printThreshold = 10000;
+var numSamples = 100;
 var framesOfData = nj.zeros([5,4,6,numSamples]);
 var currentSample = 0;
 var controllerOptions = {};
