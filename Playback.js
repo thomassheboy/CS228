@@ -52,18 +52,18 @@ function draw(){
 		for(var j = 0 ; j < oneFrameOfData.shape[1] ; j++){
 			if(other % 2){
 				xStart = oneFrameOfData.get(i,j,0) * window.innerWidth;
-				yStart = (window.innerHeight * (1-oneFrameOfData.get(i,j,1)));
+				yStart = (window.innerHeight * (1-oneFrameOfData.get(i,j,1));
 				zStart = oneFrameOfData.get(i,j,2);
 				xEnd = oneFrameOfData.get(i,j,3) * window.innerWidth;
-				yEnd = (window.innerHeight * (1 - oneFrameOfData.get(i,j,4)));
+				yEnd = (window.innerHeight * (1 - oneFrameOfData.get(i,j,4));
 				zEnd = oneFrameOfData.get(i,j,5);
 				line(xStart,yStart,xEnd,yEnd);
 			}else{
 				xStart = anotherFrameOfData.get(i,j,0) * window.innerWidth;
-				yStart = (window.innerHeight * ( 1- anotherFrameOfData.get(i,j,1)));
+				yStart = (window.innerHeight * ( 1- anotherFrameOfData.get(i,j,1));
 				zStart = anotherFrameOfData.get(i,j,2);
 				xEnd = anotherFrameOfData.get(i,j,3) * window.innerWidth;
-				yEnd = (window.innerHeight * ( 1 - anotherFrameOfData.get(i,j,4)));
+				yEnd = (window.innerHeight * ( 1 - anotherFrameOfData.get(i,j,4));
 				zEnd = anotherFrameOfData.get(i,j,5);
 				line(xStart,yStart,xEnd,yEnd);
 			}
