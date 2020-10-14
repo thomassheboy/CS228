@@ -1,4 +1,4 @@
-nj.config.printThreshold = 10000;
+nj.config.printThreshold = 100000;
 
 var trainingCompleted = false;
 const knnClassifier = ml5.KNNClassifier();
@@ -179,6 +179,7 @@ function changeBackground(){
 
 
 function Train(){
+	
 	var tensor;
 	var features;
 	var tensor2;
@@ -200,6 +201,7 @@ function Train(){
 	var tensor10;
 	var features10;
 	for(var i = 0; i < train4.shape[3] ; i++){
+		
 		tensor = train2.shape[3];
 		features = train2.pick(null,null,null,i);
 		features = features.reshape(120);
@@ -250,6 +252,7 @@ function Train(){
 		features10 = features10.reshape(120);
 		features10 = features10.tolist();
 		
+		
 		knnClassifier.addExample(features3,0);
 		knnClassifier.addExample(features2,4);
 		knnClassifier.addExample(features,2);
@@ -286,7 +289,7 @@ function GotResults(err, result){
 	//console.log(predictedClassLabels.toString())
 	//console.log("Predicted: ", parseInt(result.label))
 	var modifier=0;
-	if(parseInt(result.label)==0){
+	if(parseInt(result.label)==9){
 		modifier=1;
 	}	
 	prediction = ((numPredictions-1)*prediction + (modifier))/numPredictions;
@@ -342,7 +345,6 @@ Leap.loop(controllerOptions, function(frame){
 	if (trainingCompleted == false){
 		Train();
 	}
-	console.log("Training Completed")
 	changeBackground();
 	HandleFrame(frame);
 	//console.log(framesOfData.toString())
